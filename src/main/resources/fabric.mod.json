@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "client_paintings",
+  "version": "${version}",
+
+  "name": "Example Mod",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "enjarai"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/client_paintings/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "nl.enjarai.client_paintings.ClientPaintings"
+    ]
+  },
+  "mixins": [
+    "client_paintings.mixins.json"
+  ],
+
+  "depends": {
+    "minecraft": "~1.19"
+  }
+}
