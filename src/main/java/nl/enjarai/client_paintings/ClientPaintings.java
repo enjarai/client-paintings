@@ -2,6 +2,8 @@ package nl.enjarai.client_paintings;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
@@ -16,11 +18,9 @@ public class ClientPaintings implements ClientModInitializer {
 	public void onInitializeClient() {
 		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(PAINTING_MANAGER = new ClientPaintingManager());
 
-//		ClientSpriteRegistryCallback.event(ClientPaintingManager.SPRITE_ATLAS_ID).register((atlasTexture, registry) -> {
-//			PAINTING_MANAGER.paintings.values().forEach(clientPainting -> registry.register(clientPainting.getTexture()));
-//		});
-
-		LOGGER.info("Hello Fabric world!");
+		FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(container -> {
+			ResourceManagerHelper.registerBuiltinResourcePack(id("default"), container, ResourcePackActivationType.NORMAL);
+		});
 	}
 
 	public static Identifier id(String path) {

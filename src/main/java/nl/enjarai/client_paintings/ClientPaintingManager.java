@@ -1,36 +1,56 @@
 package nl.enjarai.client_paintings;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Streams;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.Registry;
+import nl.enjarai.client_paintings.util.Vec2i;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class ClientPaintingManager implements IdentifiableResourceReloadListener {
-    // new Identifier("textures/atlas/paintings.png");
     public static final Identifier SPRITE_ATLAS_ID = ClientPaintings.id("textures/atlas/client_paintings.png");
     public static final Identifier PAINTING_BACK_ID = new Identifier("painting/back");
+
+    public final HashMap<Vec2i, List<PaintingVariant>> defaultPaintings;
 
     public final Map<Identifier, ClientPainting> paintings = Maps.newHashMap();
     public SpriteAtlasTexture spriteAtlas;
 
+    public ClientPaintingManager() {
+        defaultPaintings = new HashMap<>();
+        Registry.PAINTING_VARIANT.stream().forEach(paintingVariant -> {
+            Vec2i size = new Vec2i(paintingVariant.getWidth(), paintingVariant.getHeight());
+            if (!defaultPaintings.containsKey(size)) {
+                defaultPaintings.put(size, Lists.newArrayList());
+            }
+            defaultPaintings.get(size).add(paintingVariant);
+        });
+    }
+
     @Nullable
     public ClientPainting getPaintingFromUUID(UUID uuid, int sizeX, int sizeY) {
+        if (paintings.isEmpty()) return null;
+
         var matching = paintings.values().stream()
                 .filter(clientPainting -> clientPainting.getPixelsX() == sizeX && clientPainting.getPixelsY() == sizeY)
                 .toList();
@@ -39,7 +59,12 @@ public class ClientPaintingManager implements IdentifiableResourceReloadListener
             return null;
         }
 
-        return matching.get((int) (uuid.getLeastSignificantBits() % matching.size()));
+        var index = Math.abs(uuid.hashCode()) % (matching.size() + defaultPaintings.get(new Vec2i(sizeX, sizeY)).size());
+        if (index < matching.size()) {
+            return matching.get(index);
+        } else {
+            return null;
+        }
     }
 
     private SpriteAtlasTexture getSpriteAtlas() {
@@ -110,16 +135,6 @@ public class ClientPaintingManager implements IdentifiableResourceReloadListener
             ClientPaintings.LOGGER.info("Loaded " + paintings.size() + " client paintings");
         }, applyExecutor);
     }
-
-//    @Override
-//    public void reload(ResourceManager manager) {
-//        Map<Identifier, ClientPainting> paintings = Maps.newConcurrentMap();
-//        manager.findResources("client_paintings", (path) -> path.getPath().endsWith(".json"))
-//                .forEach((id, resource) -> loadJson(manager, id, resource, paintings));
-//        this.paintings.clear();
-//        this.paintings.putAll(paintings);
-//        ClientPaintings.LOGGER.info("Loaded " + paintings.size() + " client paintings");
-//    }
 
     public class ClientPainting {
 
