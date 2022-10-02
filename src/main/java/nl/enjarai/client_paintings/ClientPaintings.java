@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
+import nl.enjarai.client_paintings.config.ModConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ public class ClientPaintings implements ClientModInitializer {
 	public static final String MOD_ID = "client_paintings";
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 	public static ClientPaintingManager PAINTING_MANAGER;
+	public static final ModConfig CONFIG = ModConfig.createAndLoad();
 
 	@Override
 	public void onInitializeClient() {
