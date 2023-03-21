@@ -5,7 +5,7 @@ new paintings via resource packs while keeping the vanilla paintings intact.
 It achieves this by looking at the UUID of the painting entity and
 applying a pseudo-random algorithm to it to determine which painting to render.
 
-## Features
+### Features
 
 - Add multiple new sets of paintings via resource packs
 - Keep the vanilla paintings intact
@@ -13,7 +13,7 @@ applying a pseudo-random algorithm to it to determine which painting to render.
 - Custom paintings shown will match the custom paintings seen by other players with the mod
 - Custom paintings are fully persistent between relogs and server restarts
 
-## Caveats
+### Caveats
 
 - Custom paintings will only match up between players if they both use the exact same painting sets
 - Painting sets have to be added via a custom resource pack format, see below for details
