@@ -1,4 +1,4 @@
-# Client Paintings
+# Client Paintings <img src="img/icon.png" align="right" width="50">
 
 Client Paintings is a simple, *fully client-side* mod to add 
 new paintings via resource packs while keeping the vanilla paintings intact.
