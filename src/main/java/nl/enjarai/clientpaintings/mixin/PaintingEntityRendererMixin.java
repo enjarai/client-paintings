@@ -1,6 +1,6 @@
-package nl.enjarai.client_paintings.mixin;
+package nl.enjarai.clientpaintings.mixin;
 
-import nl.enjarai.client_paintings.ClientPaintings;
+import nl.enjarai.clientpaintings.ClientPaintings;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PaintingEntityRenderer;

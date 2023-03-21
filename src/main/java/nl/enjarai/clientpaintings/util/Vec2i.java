@@ -1,4 +1,4 @@
-package nl.enjarai.client_paintings.util;
+package nl.enjarai.clientpaintings.util;
 
 import java.util.Objects;
 

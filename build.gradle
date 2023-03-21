@@ -17,8 +17,15 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 
+	// cicada
+	maven { url = 'https://maven.enjarai.nl/releases' }
+	maven { url = 'https://maven.enjarai.nl/mirrors' }
+
 	// owo-lib
-	maven { url 'https://maven.wispforest.io' }
+//	maven { url 'https://maven.wispforest.io' }
+
+	// Mod Menu repository
+	maven { url "https://maven.terraformersmc.com" }
 }
 
 dependencies {
@@ -31,9 +38,16 @@ dependencies {
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
 	// owo-lib
-	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
-	annotationProcessor "io.wispforest:owo-lib:${project.owo_version}"
-	include "io.wispforest:owo-sentinel:${project.owo_version}"
+//	modImplementation "io.wispforest:owo-lib:${project.owo_version}"
+//	annotationProcessor "io.wispforest:owo-lib:${project.owo_version}"
+//	include "io.wispforest:owo-sentinel:${project.owo_version}"
+
+	// cicada
+	include modImplementation("nl.enjarai:cicada-lib:${project.cicada_version}") {
+		exclude group: "net.fabricmc.fabric-api"
+	}
+
+	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
 }
 
 processResources {

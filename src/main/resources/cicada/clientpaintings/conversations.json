@@ -1,0 +1,82 @@
+{
+  "mod_id": "clientpaintings",
+
+  "conversations": {
+    "cicada:greetings": {
+      "lines": [
+        {
+          "order": 12,
+          "text": "Hello there."
+        },
+        {
+          "condition": {
+            "type": "cicada:mod_participates",
+            "mod_id": "showmeyourskin"
+          },
+          "order": 18,
+          "text": "Present? Is it christmas already?"
+        }
+      ]
+    },
+    "cicada:good_old_days": {
+      "lines": [
+        {
+          "order": 20,
+          "text": "Aren't we doing that right now?"
+        }
+      ]
+    },
+
+    "clientpaintings:included_pack": {
+      "priority": {
+        "priority": 50
+      },
+      "lines": [
+        {
+          "order": 0,
+          "text": "Be sure to check out the included resource pack!"
+        }
+      ]
+    },
+    "clientpaintings:atlas_jank": {
+      "priority": {
+        "priority": 50
+      },
+      "lines": [
+        {
+          "order": 0,
+          "text": "Includes a significant amount of atlas jank."
+        }
+      ]
+    },
+    "showmeyourskin:assembly": {
+      "lines": [
+        {
+          "order": 10,
+          "text": "Like IKEA?"
+        },
+        {
+          "order": 30,
+          "text": "SHÖW MÅJ DIN SKÏNNÉN."
+        }
+      ]
+    },
+
+    "cicada:christmas": {
+      "lines": [
+        {
+          "order": 30,
+          "text": "Definitely the most wonderful time of the year."
+        }
+      ]
+    },
+    "cicada:new_year": {
+      "lines": [
+        {
+          "order": 10,
+          "text": "\uD83C\uDF86\uD83C\uDF86\uD83C\uDF86\uD83C\uDF86 Depending on your log viewer, these fireworks might not work. Happy new year either way though!"
+        }
+      ]
+    }
+  }
+}

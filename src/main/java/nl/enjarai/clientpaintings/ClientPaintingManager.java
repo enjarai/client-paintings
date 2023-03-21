@@ -1,4 +1,4 @@
-package nl.enjarai.client_paintings;
+package nl.enjarai.clientpaintings;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
-import nl.enjarai.client_paintings.util.Vec2i;
+import nl.enjarai.clientpaintings.util.Vec2i;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
