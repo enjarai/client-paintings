@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.ResourcePackActivationType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import nl.enjarai.cicada.api.conversation.ConversationManager;
 import nl.enjarai.cicada.api.util.CicadaEntrypoint;
@@ -18,12 +19,10 @@ public class ClientPaintings implements ClientModInitializer, CicadaEntrypoint {
 	public static ClientPaintingManager PAINTING_MANAGER;
 	@Override
 	public void onInitializeClient() {
-		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(PAINTING_MANAGER = new ClientPaintingManager());
-
 		FabricLoader.getInstance().getModContainer(MOD_ID).ifPresent(container -> {
 			ResourceManagerHelper.registerBuiltinResourcePack(
 					id("default"), container,
-					"Client Paintings Defaults",
+					Text.literal("Client Paintings Defaults"),
 					ResourcePackActivationType.NORMAL
 			);
 		});

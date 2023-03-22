@@ -1,0 +1,9 @@
+{
+    "sources": [
+        {
+            "type": "directory",
+            "source": "client_paintings",
+            "prefix": "client_paintings/"
+        }
+    ]
+}

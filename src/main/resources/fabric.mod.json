@@ -29,9 +29,10 @@
   "mixins": [
     "clientpaintings.mixins.json"
   ],
+  "accessWidener": "clientpaintings.accesswidener",
 
   "depends": {
-    "minecraft": ">=1.19 <1.19.3-",
+    "minecraft": ">=1.19.3 <1.19.5-",
     "fabric-api": "*"
   },
 

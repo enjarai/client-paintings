@@ -2,19 +2,20 @@ package nl.enjarai.clientpaintings;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Streams;
 import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.Sprite;
+import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.SpriteAtlasTexture;
+import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
+import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.profiler.Profiler;
-import net.minecraft.util.registry.Registry;
 import nl.enjarai.clientpaintings.util.Vec2i;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,18 +28,19 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-public class ClientPaintingManager implements IdentifiableResourceReloadListener {
+public class ClientPaintingManager extends SpriteAtlasHolder implements IdentifiableResourceReloadListener {
     public static final Identifier SPRITE_ATLAS_ID = ClientPaintings.id("textures/atlas/client_paintings.png");
     public static final Identifier PAINTING_BACK_ID = new Identifier("painting/back");
+    public static final Identifier CLIENT_PAINTINGS_PATH = ClientPaintings.id("client_paintings");
 
     public final HashMap<Vec2i, List<PaintingVariant>> defaultPaintings;
 
     public final Map<Identifier, ClientPainting> paintings = Maps.newHashMap();
-    public SpriteAtlasTexture spriteAtlas;
 
     public ClientPaintingManager() {
+        super(MinecraftClient.getInstance().getTextureManager(), SPRITE_ATLAS_ID, CLIENT_PAINTINGS_PATH);
         defaultPaintings = new HashMap<>();
-        Registry.PAINTING_VARIANT.stream().forEach(paintingVariant -> {
+        Registries.PAINTING_VARIANT.stream().forEach(paintingVariant -> {
             Vec2i size = new Vec2i(paintingVariant.getWidth(), paintingVariant.getHeight());
             if (!defaultPaintings.containsKey(size)) {
                 defaultPaintings.put(size, Lists.newArrayList());
@@ -68,11 +70,7 @@ public class ClientPaintingManager implements IdentifiableResourceReloadListener
     }
 
     private SpriteAtlasTexture getSpriteAtlas() {
-        if (spriteAtlas == null) {
-            spriteAtlas = new SpriteAtlasTexture(SPRITE_ATLAS_ID);
-            MinecraftClient.getInstance().getTextureManager().registerTexture(spriteAtlas.getId(), spriteAtlas);
-        }
-        return spriteAtlas;
+        return atlas;
     }
 
 
@@ -97,7 +95,7 @@ public class ClientPaintingManager implements IdentifiableResourceReloadListener
 
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        getSpriteAtlas();
+        var spritesFuture = super.reload(synchronizer, manager, prepareProfiler, applyProfiler, prepareExecutor, applyExecutor);
 
         Map<Identifier, ClientPainting> paintings = Maps.newConcurrentMap();
         var paintingsFuture = CompletableFuture.supplyAsync(() -> {
@@ -108,32 +106,11 @@ public class ClientPaintingManager implements IdentifiableResourceReloadListener
             }).toArray(CompletableFuture[]::new)).join();
         }, prepareExecutor);
 
-        var stitchingFuture = paintingsFuture.thenApplyAsync((v) -> {
-            prepareProfiler.startTick();
-            prepareProfiler.push("stitching");
-            var paintingSprites = Streams.concat(
-                    paintings.values().stream().map(ClientPainting::getTexture),
-                    paintings.values().stream().map(ClientPainting::getBackTexture)
-            );
-            SpriteAtlasTexture.Data data = getSpriteAtlas().stitch(manager, paintingSprites, prepareProfiler, 0);
-            prepareProfiler.pop();
-            prepareProfiler.endTick();
-            return data;
-        }, prepareExecutor);
-
-        var uploadFuture = stitchingFuture.thenCompose(synchronizer::whenPrepared).thenAcceptAsync((data) -> {
-            applyProfiler.startTick();
-            applyProfiler.push("upload");
-            getSpriteAtlas().upload(data);
-            applyProfiler.pop();
-            applyProfiler.endTick();
-        }, applyExecutor);
-
-        return uploadFuture.thenRunAsync(() -> {
+        return CompletableFuture.allOf(paintingsFuture.thenRunAsync(() -> {
             this.paintings.clear();
             this.paintings.putAll(paintings);
             ClientPaintings.LOGGER.info("Loaded " + paintings.size() + " client paintings");
-        }, applyExecutor);
+        }, applyExecutor), spritesFuture);
     }
 
     public class ClientPainting {
