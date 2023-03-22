@@ -41,15 +41,15 @@ Each json file must have the following structure:
 
 ```json
 {
-  "texture": "<namespace>:paintings/painting_texture",
-  "back": "<namespace>:paintings/painting_back_texture",
+  "texture": "<namespace>:client_paintings/painting_texture",
+  "back": "<namespace>:client_paintings/painting_back_texture",
   "size": [2, 1]
 }
 ```
 
 - `texture` is the texture of the painting, it must be a png image with a ratio matching the `size` field, 
-  with width and height both being a multiple of 16. The texture can be located anywhere within 
-  the `assets/<namespace>/textures` folder.
+  with width and height both being a multiple of 16. The texture has to be located within 
+  the `assets/<namespace>/textures/client_paintings` folder.
 - `back` is the texture of the back of the painting, it must be a square png image with similarly, a width and height
   being a multiple of 16.
 - `size` is the size of the painting in blocks, the first value is the width, the second value is the height.
@@ -63,7 +63,7 @@ pack.mcmeta
 assets
 └── namespace
     ├── textures
-    │   └── paintings
+    │   └── client_paintings
     │       ├── painting1.png
     │       ├── painting2.png
     │       ├── painting3.png
