@@ -7,7 +7,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasHolder;
 import net.minecraft.client.texture.SpriteAtlasTexture;
-import net.minecraft.client.texture.SpriteLoader;
 import net.minecraft.entity.decoration.painting.PaintingVariant;
 import net.minecraft.registry.Registries;
 import net.minecraft.resource.Resource;
@@ -106,11 +105,25 @@ public class ClientPaintingManager extends SpriteAtlasHolder implements Identifi
             }).toArray(CompletableFuture[]::new)).join();
         }, prepareExecutor);
 
-        return CompletableFuture.allOf(paintingsFuture.thenRunAsync(() -> {
+        return CompletableFuture.allOf(paintingsFuture, spritesFuture).thenRunAsync(() -> {
+            paintings.forEach((id, painting) -> {
+                var sprite = getSpriteAtlas().getSprite(painting.getTexture());
+                if (sprite == null) {
+                    ClientPaintings.LOGGER.error("Could not find sprite for painting " + id);
+                    return;
+                }
+                if (painting.getBackTexture() != null) {
+                    var backSprite = getSpriteAtlas().getSprite(painting.getBackTexture());
+                    if (backSprite == null) {
+                        ClientPaintings.LOGGER.error("Could not find back sprite for painting " + id);
+                        return;
+                    }
+                }
+            });
             this.paintings.clear();
             this.paintings.putAll(paintings);
             ClientPaintings.LOGGER.info("Loaded " + paintings.size() + " client paintings");
-        }, applyExecutor), spritesFuture);
+        }, applyExecutor);
     }
 
     public class ClientPainting {
@@ -144,10 +157,12 @@ public class ClientPaintingManager extends SpriteAtlasHolder implements Identifi
             return backTexture != null ? backTexture : PAINTING_BACK_ID;
         }
 
+        @Nullable
         public Sprite getSprite() {
             return getSpriteAtlas().getSprite(getTexture());
         }
 
+        @Nullable
         public Sprite getBackSprite() {
             return getSpriteAtlas().getSprite(getBackTexture());
         }

@@ -1,6 +1,10 @@
 {
     "sources": [
         {
+            "type": "single",
+            "resource": "painting/back"
+        },
+        {
             "type": "directory",
             "source": "client_paintings",
             "prefix": "client_paintings/"

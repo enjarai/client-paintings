@@ -15,7 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MinecraftClientMixin {
     @Inject(
             method = "<init>",
-            at = @At("TAIL")
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/texture/PaintingManager;<init>(Lnet/minecraft/client/texture/TextureManager;)V"
+            )
     )
     private void clientpaintings$initPaintingManager(RunArgs args, CallbackInfo ci) {
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES)

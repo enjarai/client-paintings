@@ -50,6 +50,10 @@ public abstract class PaintingEntityRendererMixin {
 		var sprite = painting.getSprite();
 		var backSprite = painting.getBackSprite();
 
+		if (sprite == null || backSprite == null) {
+			return;
+		}
+
 		args.set(1, clientpaintings$vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(sprite.getAtlasId())));
 		args.set(5, sprite);
 		args.set(6, backSprite);

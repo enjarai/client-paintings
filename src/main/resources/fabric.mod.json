@@ -32,7 +32,7 @@
   "accessWidener": "clientpaintings.accesswidener",
 
   "depends": {
-    "minecraft": ">=1.19.3 <1.19.5-",
+    "minecraft": ">=1.19.4 <1.19.5-",
     "fabric-api": "*"
   },
 
