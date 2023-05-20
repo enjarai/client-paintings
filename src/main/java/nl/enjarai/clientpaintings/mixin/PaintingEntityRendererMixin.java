@@ -39,9 +39,8 @@ public abstract class PaintingEntityRendererMixin {
 			return;
 		}
 
-		var originalSprite = (Sprite) args.get(5);
 		var painting = ClientPaintings.PAINTING_MANAGER
-				.getPaintingFromUUID(clientpaintings$uuid, originalSprite.getContents().getWidth(), originalSprite.getContents().getHeight());
+				.getPaintingFromUUID(clientpaintings$uuid, args.get(3), args.get(4));
 
 		if (painting == null) {
 			return;
