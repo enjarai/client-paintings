@@ -24,6 +24,13 @@ jobs:
       - run: chmod +x gradlew
       - name: Build And Publish To Maven
         run: ./gradlew build --no-daemon
+      - name: Update GitHub Release
+        uses: tubone24/update_release@v1.3.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          body_path: CHANGELOG.md
+          is_append_body: true
       - uses: Kir-Antipov/mc-publish@v3.2
         with:
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
@@ -31,3 +38,5 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
           modrinth-featured: false
+
+          changelog-file: CHANGELOG.md
