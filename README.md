@@ -51,7 +51,7 @@ Each json file must have the following structure:
   with width and height both being a multiple of 16. The texture has to be located within 
   the `assets/<namespace>/textures/client_paintings` folder.
 - `back` is the texture of the back of the painting, it must be a square png image with similarly, a width and height
-  being a multiple of 16.
+  being a multiple of 16. (Optional, the vanilla back texture will be used if absent)
 - `size` is the size of the painting in blocks, the first value is the width, the second value is the height.
   Do note only 1x1, 1x2, 2x1, 2x2, 4x2, 4x4, and 4x3 size paintings are supported due to the need to replace
   a vanilla painting.
@@ -76,5 +76,5 @@ assets
         └── painting3.json
 ```
 
-The source for the default included pack can be easily browsed 
+The source for the default included pack can be browsed 
 [here](https://github.com/enjarai/client-paintings/tree/master/src/main/resources/resourcepacks/default).
