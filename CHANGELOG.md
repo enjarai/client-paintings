@@ -1,1 +1,2 @@
-- Updated to 1.20 and 1.20.1
+- Backported 1.2.0 changes to Minecraft 1.19
+- Changed the `fabric-api` dependency to `fabric` so the mod works properly on pre-1.19.2.
