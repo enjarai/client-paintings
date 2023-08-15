@@ -18,30 +18,30 @@ import java.util.UUID;
 
 @Mixin(PaintingEntityRenderer.class)
 public abstract class PaintingEntityRendererMixin {
-	private UUID uuid;
-	private VertexConsumerProvider vertexConsumerProvider;
+	private UUID clientpaintings$uuid;
+	private VertexConsumerProvider clientpaintings$vertexConsumerProvider;
 
 	@Inject(
 			method = "render(Lnet/minecraft/entity/decoration/painting/PaintingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
 			at = @At(value = "HEAD")
 	)
-	private void captureVars(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
-		uuid = paintingEntity.getUuid();
-		this.vertexConsumerProvider = vertexConsumerProvider;
+	private void clientpaintings$captureVars(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
+		clientpaintings$uuid = paintingEntity.getUuid();
+		this.clientpaintings$vertexConsumerProvider = vertexConsumerProvider;
 	}
 
 	@ModifyArgs(
 			method = "render(Lnet/minecraft/entity/decoration/painting/PaintingEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V",
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PaintingEntityRenderer;renderPainting(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/entity/decoration/painting/PaintingEntity;IILnet/minecraft/client/texture/Sprite;Lnet/minecraft/client/texture/Sprite;)V")
 	)
-	private void init(Args args) {
-		if (uuid == null || vertexConsumerProvider == null) {
+	private void clientpaintings$init(Args args) {
+		if (clientpaintings$uuid == null || clientpaintings$vertexConsumerProvider == null) {
 			return;
 		}
 
 		var originalSprite = (Sprite) args.get(5);
 		var painting = ClientPaintings.PAINTING_MANAGER
-				.getPaintingFromUUID(uuid, originalSprite.getWidth(), originalSprite.getHeight());
+				.getPaintingFromUUID(clientpaintings$uuid, originalSprite.getWidth(), originalSprite.getHeight());
 
 		if (painting == null) {
 			return;
@@ -50,11 +50,15 @@ public abstract class PaintingEntityRendererMixin {
 		var sprite = painting.getSprite();
 		var backSprite = painting.getBackSprite();
 
-		args.set(1, vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(sprite.getAtlas().getId())));
+		if (sprite == null || backSprite == null) {
+			return;
+		}
+
+		args.set(1, clientpaintings$vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(sprite.getAtlasId())));
 		args.set(5, sprite);
 		args.set(6, backSprite);
 
-		uuid = null;
-		vertexConsumerProvider = null;
+		clientpaintings$uuid = null;
+		clientpaintings$vertexConsumerProvider = null;
 	}
 }

@@ -32,10 +32,16 @@
 
   "depends": {
     "minecraft": ">=1.19 <1.19.3-",
-    "fabric-api": "*"
+    "fabric": "*",
+    "cicada": "*"
   },
 
   "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/WcYsDDQtyR"
+      }
+    },
     "projects": {
       "modrinth": "6NZYNcOV",
       "curseforge": 840501
