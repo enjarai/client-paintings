@@ -54,7 +54,7 @@ public abstract class PaintingEntityRendererMixin {
 			return;
 		}
 
-		args.set(1, clientpaintings$vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(sprite.getAtlasId())));
+		args.set(1, clientpaintings$vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(sprite.getAtlas().getId())));
 		args.set(5, sprite);
 		args.set(6, backSprite);
 
