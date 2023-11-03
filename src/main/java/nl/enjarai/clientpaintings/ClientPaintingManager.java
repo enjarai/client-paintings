@@ -19,7 +19,6 @@ import nl.enjarai.clientpaintings.util.Vec2i;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,21 +37,23 @@ public class ClientPaintingManager extends SpriteAtlasHolder implements Identifi
 
     public ClientPaintingManager() {
         super(MinecraftClient.getInstance().getTextureManager(), SPRITE_ATLAS_ID, CLIENT_PAINTINGS_PATH);
-        defaultPaintings = new HashMap<>();
+        this.defaultPaintings = Maps.newHashMap();
         Registries.PAINTING_VARIANT.stream().forEach(paintingVariant -> {
-            Vec2i size = new Vec2i(paintingVariant.getWidth(), paintingVariant.getHeight());
-            if (!defaultPaintings.containsKey(size)) {
-                defaultPaintings.put(size, Lists.newArrayList());
+            var size = new Vec2i(paintingVariant.getWidth(), paintingVariant.getHeight());
+            if (!this.defaultPaintings.containsKey(size)) {
+                this.defaultPaintings.put(size, Lists.newArrayList());
             }
-            defaultPaintings.get(size).add(paintingVariant);
+            this.defaultPaintings.get(size).add(paintingVariant);
         });
     }
 
     @Nullable
     public ClientPainting getPaintingFromUUID(UUID uuid, int sizeX, int sizeY) {
-        if (paintings.isEmpty()) return null;
+        if (this.paintings.isEmpty()) {
+            return null;
+        }
 
-        var matching = paintings.values().stream()
+        var matching = this.paintings.values().stream()
                 .filter(clientPainting -> clientPainting.getPixelsX() == sizeX && clientPainting.getPixelsY() == sizeY)
                 .toList();
 
@@ -60,26 +61,26 @@ public class ClientPaintingManager extends SpriteAtlasHolder implements Identifi
             return null;
         }
 
-        var index = Math.abs(uuid.hashCode()) % (matching.size() + defaultPaintings.get(new Vec2i(sizeX, sizeY)).size());
+        var index = Math.abs(uuid.hashCode()) % (matching.size() + this.defaultPaintings.get(new Vec2i(sizeX, sizeY)).size());
         if (index < matching.size()) {
             return matching.get(index);
-        } else {
+        }
+        else {
             return null;
         }
     }
 
     private SpriteAtlasTexture getSpriteAtlas() {
-        return atlas;
+        return this.atlas;
     }
-
 
     @Override
     public Identifier getFabricId() {
         return ClientPaintings.id("client_paintings");
     }
 
-    protected void loadJson(ResourceManager manager, Identifier id, Resource resource, Map<Identifier, ClientPainting> paintings) {
-        try (Reader reader = resource.getReader()) {
+    protected void loadJson(Identifier id, Resource resource, Map<Identifier, ClientPainting> paintings) {
+        try (var reader = resource.getReader()) {
             var painting = JsonHelper.deserialize(reader).getAsJsonObject();
             var paintingTexture = new Identifier(painting.get("texture").getAsString());
             var paintingBackTexture = painting.has("back") ? new Identifier(painting.get("back").getAsString()) : null;
@@ -95,28 +96,25 @@ public class ClientPaintingManager extends SpriteAtlasHolder implements Identifi
     @Override
     public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         var spritesFuture = super.reload(synchronizer, manager, prepareProfiler, applyProfiler, prepareExecutor, applyExecutor);
-
         Map<Identifier, ClientPainting> paintings = Maps.newConcurrentMap();
-        var paintingsFuture = CompletableFuture.supplyAsync(() -> {
-            return CompletableFuture.allOf(manager.findResources("client_paintings", (path) -> path.getPath().endsWith(".json")).entrySet().stream().map(entry -> {
-                var id = entry.getKey();
-                var resource = entry.getValue();
-                return CompletableFuture.runAsync(() -> loadJson(manager, id, resource, paintings), prepareExecutor);
-            }).toArray(CompletableFuture[]::new)).join();
-        }, prepareExecutor);
+        var paintingsFuture = CompletableFuture.supplyAsync(() -> CompletableFuture.allOf(manager.findResources("client_paintings", path -> path.getPath().endsWith(".json"))
+                .entrySet().stream().map(entry -> {
+                    var id = entry.getKey();
+                    var resource = entry.getValue();
+                    return CompletableFuture.runAsync(() -> this.loadJson(id, resource, paintings), prepareExecutor);
+                }).toArray(CompletableFuture[]::new)).join(), prepareExecutor);
 
         return CompletableFuture.allOf(paintingsFuture, spritesFuture).thenRunAsync(() -> {
             paintings.forEach((id, painting) -> {
-                var sprite = getSpriteAtlas().getSprite(painting.getTexture());
+                var sprite = this.getSpriteAtlas().getSprite(painting.getTexture());
                 if (sprite == null) {
                     ClientPaintings.LOGGER.error("Could not find sprite for painting " + id);
                     return;
                 }
                 if (painting.getBackTexture() != null) {
-                    var backSprite = getSpriteAtlas().getSprite(painting.getBackTexture());
+                    var backSprite = this.getSpriteAtlas().getSprite(painting.getBackTexture());
                     if (backSprite == null) {
                         ClientPaintings.LOGGER.error("Could not find back sprite for painting " + id);
-                        return;
                     }
                 }
             });
@@ -127,7 +125,6 @@ public class ClientPaintingManager extends SpriteAtlasHolder implements Identifi
     }
 
     public class ClientPainting {
-
         private final Identifier texture;
         @Nullable
         private final Identifier backTexture;
@@ -142,7 +139,7 @@ public class ClientPaintingManager extends SpriteAtlasHolder implements Identifi
         }
 
         public Identifier getId() {
-            return paintings.entrySet().stream()
+            return ClientPaintingManager.this.paintings.entrySet().stream()
                     .filter(entry -> entry.getValue().equals(this))
                     .findFirst()
                     .orElseThrow(() -> new IllegalStateException("Painting not loaded properly"))
@@ -150,37 +147,37 @@ public class ClientPaintingManager extends SpriteAtlasHolder implements Identifi
         }
 
         public Identifier getTexture() {
-            return texture;
+            return this.texture;
         }
 
         public Identifier getBackTexture() {
-            return backTexture != null ? backTexture : PAINTING_BACK_ID;
+            return this.backTexture != null ? this.backTexture : PAINTING_BACK_ID;
         }
 
         @Nullable
         public Sprite getSprite() {
-            return getSpriteAtlas().getSprite(getTexture());
+            return ClientPaintingManager.this.getSpriteAtlas().getSprite(this.getTexture());
         }
 
         @Nullable
         public Sprite getBackSprite() {
-            return getSpriteAtlas().getSprite(getBackTexture());
+            return ClientPaintingManager.this.getSpriteAtlas().getSprite(this.getBackTexture());
         }
 
         public int getSizeX() {
-            return sizeX;
+            return this.sizeX;
         }
 
         public int getSizeY() {
-            return sizeY;
+            return this.sizeY;
         }
 
         public int getPixelsX() {
-            return sizeX * 16;
+            return this.sizeX * 16;
         }
 
         public int getPixelsY() {
-            return sizeY * 16;
+            return this.sizeY * 16;
         }
     }
 }

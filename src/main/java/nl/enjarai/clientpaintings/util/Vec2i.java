@@ -20,35 +20,39 @@ public class Vec2i {
     }
 
     public Vec2i add(Vec2i other) {
-        return new Vec2i(x + other.x, y + other.y);
+        return new Vec2i(this.x + other.x, this.y + other.y);
     }
 
     public Vec2i subtract(Vec2i other) {
-        return new Vec2i(x - other.x, y - other.y);
+        return new Vec2i(this.x - other.x, this.y - other.y);
     }
 
     public Vec2i multiply(int scalar) {
-        return new Vec2i(x * scalar, y * scalar);
+        return new Vec2i(this.x * scalar, this.y * scalar);
     }
 
     public Vec2i divide(int scalar) {
-        return new Vec2i(x / scalar, y / scalar);
+        return new Vec2i(this.x / scalar, this.y / scalar);
     }
 
     public Vec2i negate() {
-        return new Vec2i(-x, -y);
+        return new Vec2i(-this.x, -this.y);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Vec2i vec2i = (Vec2i) o;
-        return x == vec2i.x && y == vec2i.y;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || this.getClass() != o.getClass()) {
+            return false;
+        }
+        var vec2i = (Vec2i) o;
+        return this.x == vec2i.x && this.y == vec2i.y;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y);
+        return Objects.hash(this.x, this.y);
     }
 }

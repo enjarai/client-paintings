@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
 public abstract class MinecraftClientMixin {
+
     @Inject(
             method = "<init>",
             at = @At(
@@ -21,7 +22,6 @@ public abstract class MinecraftClientMixin {
             )
     )
     private void clientpaintings$initPaintingManager(RunArgs args, CallbackInfo ci) {
-        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES)
-                .registerReloadListener(ClientPaintings.PAINTING_MANAGER = new ClientPaintingManager());
+        ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(ClientPaintings.PAINTING_MANAGER = new ClientPaintingManager());
     }
 }

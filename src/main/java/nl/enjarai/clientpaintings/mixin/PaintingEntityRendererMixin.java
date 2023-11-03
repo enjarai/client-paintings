@@ -4,7 +4,6 @@ import nl.enjarai.clientpaintings.ClientPaintings;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PaintingEntityRenderer;
-import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +25,7 @@ public abstract class PaintingEntityRendererMixin {
 			at = @At(value = "HEAD")
 	)
 	private void clientpaintings$captureVars(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
-		clientpaintings$uuid = paintingEntity.getUuid();
+		this.clientpaintings$uuid = paintingEntity.getUuid();
 		this.clientpaintings$vertexConsumerProvider = vertexConsumerProvider;
 	}
 
@@ -35,12 +34,11 @@ public abstract class PaintingEntityRendererMixin {
 			at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/PaintingEntityRenderer;renderPainting(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;Lnet/minecraft/entity/decoration/painting/PaintingEntity;IILnet/minecraft/client/texture/Sprite;Lnet/minecraft/client/texture/Sprite;)V")
 	)
 	private void clientpaintings$init(Args args) {
-		if (clientpaintings$uuid == null || clientpaintings$vertexConsumerProvider == null) {
+		if (this.clientpaintings$uuid == null || this.clientpaintings$vertexConsumerProvider == null) {
 			return;
 		}
 
-		var painting = ClientPaintings.PAINTING_MANAGER
-				.getPaintingFromUUID(clientpaintings$uuid, args.get(3), args.get(4));
+		var painting = ClientPaintings.PAINTING_MANAGER.getPaintingFromUUID(this.clientpaintings$uuid, args.get(3), args.get(4));
 
 		if (painting == null) {
 			return;
@@ -53,11 +51,11 @@ public abstract class PaintingEntityRendererMixin {
 			return;
 		}
 
-		args.set(1, clientpaintings$vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(sprite.getAtlasId())));
+		args.set(1, this.clientpaintings$vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(sprite.getAtlasId())));
 		args.set(5, sprite);
 		args.set(6, backSprite);
 
-		clientpaintings$uuid = null;
-		clientpaintings$vertexConsumerProvider = null;
+		this.clientpaintings$uuid = null;
+		this.clientpaintings$vertexConsumerProvider = null;
 	}
 }
