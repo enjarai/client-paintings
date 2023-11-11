@@ -5,6 +5,10 @@ new paintings via resource packs while keeping the vanilla paintings intact.
 It achieves this by looking at the UUID of the painting entity and
 applying a pseudo-random algorithm to it to determine which painting to render.
 
+This mod uses a custom resource pack format to add new paintings,
+you can use the [Client Paintings Pack Generator](https://enjarai.dev/#/tools/client-paintings-generator) on my website
+to generate such a pack easily. Alternatively, see the resource pack format section below for technical instructions.
+
 ### Features
 
 - Add multiple new sets of paintings via resource packs
@@ -29,9 +33,6 @@ What vanilla players see:
 <img src="img/without.png" width="512"/>
 
 ## Resource pack format
-
-A resource pack converter is being worked on, but for now, you will have to manually create
-a resource pack to add custom paintings.
 
 The resource pack format is very simple. It consists of a single `client_paintings` folder
 located in the root of your resource pack namespace (e.g. `assets/<namespace>/client_paintings`).
